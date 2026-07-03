@@ -21,6 +21,19 @@ const Annotation = utils.makeDataClass('FoliateAnnotation', {
     'modified': 'string',
 })
 
+const annotationSearchTexts = new WeakMap()
+const getAnnotationSearchText = annotation => {
+    if (annotationSearchTexts.has(annotation))
+        return annotationSearchTexts.get(annotation)
+    const text = [annotation.text, annotation.color, annotation.note]
+        .filter(x => typeof x === 'string')
+        .join('\n')
+        .toLowerCase()
+    annotationSearchTexts.set(annotation, text)
+    return text
+}
+const clearAnnotationSearchText = annotation => annotationSearchTexts.delete(annotation)
+
 const AnnotationHeading = utils.makeDataClass('FoliateAnnotationHeading', {
     'label': 'string',
     'index': 'uint',
@@ -192,10 +205,13 @@ export const AnnotationModel = GObject.registerClass({
         const obj = annotation instanceof Annotation
             ? new Annotation(annotation.toJSON()) : new Annotation(annotation)
         this.#map.set(value, obj)
-        obj.connectAll(() => {
+        const update = () => {
+            clearAnnotationSearchText(obj)
             obj.modified = new Date().toISOString()
             this.emit('update-annotation', obj)
-        })
+        }
+        for (const prop of ['color', 'text', 'note'])
+            obj.connect(`notify::${prop}`, update)
         if (this.#lists.has(index)) {
             const list = this.#lists.get(index)
             for (const [i, item] of utils.gliter(list)) {
@@ -323,8 +339,7 @@ GObject.registerClass({
         const filter = new Gtk.CustomFilter()
         filter.set_filter_func(query ? row => {
             const { item } = row
-            const { text, color, note } = item
-            return [text, color, note].some(x => x?.toLowerCase()?.includes(query))
+            return getAnnotationSearchText(item).includes(query)
         } : null)
         this.#filter.filter = filter
     }

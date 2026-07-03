@@ -1,40 +1,70 @@
-<img src="data/com.github.johnfactotum.Foliate.svg" align="left" style="margin-right:8px"> 
+<img src="data/io.github.misakisata.Foliate.svg" align="left" style="margin-right:8px">
 <br><br>
 
-# Foliate
+# Foliate 自用版
 
-Read books in style.
+个人使用的 Foliate 构建，默认中文界面，使用独立应用 ID：`io.github.misakisata.Foliate`。
 
 ![Screenshot](data/screenshots/screenshot.png)
 
-## Installation
+## 安装和使用
 
-### Run Time Dependencies
+### 推荐方式：Flatpak
+
+这个自用版使用独立应用 ID `io.github.misakisata.Foliate` 和命令 `foliate-personal`，不会覆盖官方 Foliate。
+
+Ubuntu:
+
+```sh
+sudo apt install flatpak flatpak-builder
+```
+
+Manjaro:
+
+```sh
+sudo pacman -S flatpak flatpak-builder
+```
+
+打包、安装和运行：
+
+```sh
+./packaging/build-flatpak-bundle.sh
+flatpak install --user dist/io.github.misakisata.Foliate.flatpak
+flatpak run io.github.misakisata.Foliate
+```
+
+如果下载 Flathub 依赖很慢，可以使用本地代理：
+
+```sh
+PACKAGING_PROXY=127.0.0.1:10808 ./packaging/build-flatpak-bundle.sh
+```
+
+更多说明见 [packaging/README.md](packaging/README.md)。
+
+### 源码运行依赖
 
 - `gjs` (>= 1.82)
 - `gtk4` (>= 4.12)
-- `libadwaita` (>= 1.8; `gir1.2-adw-1` in Debian-based distros)
-- `webkitgtk-6.0` (`webkitgtk6.0` in Fedora; `gir1.2-webkit-6.0` in Debian-based distros)
+- `libadwaita` (>= 1.8; Debian/Ubuntu 中通常是 `gir1.2-adw-1`)
+- `webkitgtk-6.0` (Fedora 中通常是 `webkitgtk6.0`，Debian/Ubuntu 中通常是 `gir1.2-webkit-6.0`)
 
-#### Optional Dependencies
+#### 可选依赖
 
-To enable auto-hyphenation, you will need to install hyphenation rules, e.g., `hyphen-en` for English, `hyphen-fr` for French, etc. (which strictly speaking are optional dependencies for WebkitGTK, not Foliate itself).
+自动断词需要安装对应语言的 hyphenation rules，例如 `hyphen-en`、`hyphen-fr`。
 
-For text-to-speech support, install `speech-dispatcher` and output modules such as `espeak-ng`.
+文本转语音需要安装 `speech-dispatcher` 和 `espeak-ng` 等输出模块。
 
-If installed, `tracker` (>= 3; `gir1.2-tracker-3.0` in Debian-based distros) and `tracker-miners` can be used to track the locations of files.
+如果安装了 `tracker` (>= 3) 和 `tracker-miners`，资料库视图可以跟踪文件位置。
 
-### Obtaining the Source
+### 获取源码
 
 The repo uses git submodules. Before running or installing, make sure you clone the whole thing with `--recurse-submodules`:
 
 ```
-git clone --recurse-submodules https://github.com/johnfactotum/foliate.git 
+git clone --recurse-submodules https://github.com/MisakiSATA/foliate.git
 ```
 
-Or download the tarball (the `.tar.xz` file) from the [Releases](https://github.com/johnfactotum/foliate/releases) page.
-
-### Run without Building or Installing
+### 不安装直接运行
 
 It's possible to run directly from the source tree without building or installing. Simply run
 
@@ -56,7 +86,7 @@ Then you can set the schema directory when running the app:
 GSETTINGS_SCHEMA_DIR=data gjs -m src/main.js
 ```
 
-### Building and Installing from Source
+### 从源码构建安装
 
 The following dependencies are required for building:
 
@@ -89,21 +119,7 @@ ninja -C build install
 You can then run it with
 
 ```
-GSETTINGS_SCHEMA_DIR=run/share/glib-2.0/schemas ./run/bin/foliate
-```
-
-### Flatpak
-
-Foliate is available on [Flathub](https://flathub.org/apps/details/com.github.johnfactotum.Foliate).
-
-For developement with Flatpak, use [GNOME Builder](https://wiki.gnome.org/Apps/Builder) to open and run the project.
-
-### Snap
-
-Foliate is available on the [Snap Store](https://snapcraft.io/foliate). To install:
-
-```
-sudo snap install foliate
+GSETTINGS_SCHEMA_DIR=run/share/glib-2.0/schemas ./run/bin/foliate-personal
 ```
 
 ## Screenshots
@@ -130,7 +146,3 @@ The following JavaScript libraries are bundled in this software:
 - [zip.js](https://github.com/gildas-lormeau/zip.js), which is licensed under the BSD-3-Clause license.
 - [fflate](https://github.com/101arrowz/fflate), which is MIT licensed.
 - [PDF.js](https://github.com/mozilla/pdf.js), which is licensed under Apache License 2.0.
-
----
-
-<a href="https://www.buymeacoffee.com/johnfactotum" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>

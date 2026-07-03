@@ -266,16 +266,17 @@ GObject.registerClass({
         const gestureBack = new Gtk.GestureClick()
         gestureForward.set_button(9)
         gestureBack.set_button(8)
-        this.#webView.add_controller(utils.connect(gestureForward,{
-	    'pressed': () => this.#exec('reader.view.history.forward'),
+        this.#webView.add_controller(utils.connect(gestureForward, {
+            'pressed': () => this.#exec('reader.view.history.forward'),
         }))
-        this.#webView.add_controller(utils.connect(gestureBack,{
-	    'pressed': () => this.#exec('reader.view.history.back'),
+        this.#webView.add_controller(utils.connect(gestureBack, {
+            'pressed': () => this.#exec('reader.view.history.back'),
         }))
 
         const applyStyle = () => this.#applyStyle().catch(e => console.error(e))
-        this.viewSettings.connectAll(applyStyle)
-        this.fontSettings.connectAll(applyStyle)
+        const queueApplyStyle = utils.debounce(applyStyle, 75)
+        this.viewSettings.connectAll(queueApplyStyle)
+        this.fontSettings.connectAll(queueApplyStyle)
         this.connect('book-ready', applyStyle)
 
         this.#webView.connect('notify::zoom-level', webView => {
@@ -431,8 +432,18 @@ const autohide = (revealer, shouldStayVisible) => {
     return { show, hide, sync }
 }
 
-const makeIdentifier = file => {
+const queueSaveCover = (data, cover, shouldSave = () => true) => {
+    if (!cover) return
+    utils.wait(0)
+        .then(() => {
+            if (shouldSave()) data.saveCover(cover)
+        })
+        .catch(e => console.warn(e))
+}
+
+const makeIdentifier = async file => {
     try {
+        await utils.wait(0)
         const stream = file.read(null)
         // 10000000 might not be the best value but I guess we will stick to it
         // for compatibility with previous versions
@@ -459,14 +470,15 @@ export const importFiles = files => {
             (req.select_files([encodeURI(currentFile.get_path())]), true),
     })
     const save = async book => {
-        book.metadata.identifier ||= makeIdentifier(currentFile)
+        if (!book.metadata.identifier)
+            book.metadata.identifier = await makeIdentifier(currentFile)
         const { identifier } = book.metadata
         if (!identifier) throw new Error('Could not get identifier')
         const data = new BookData(identifier)
         data.storage.set('metadata', book.metadata, false)
         data.saveURI(currentFile)
         const cover = await webView.exec('reader.getCover').then(utils.base64ToPixbuf)
-        if (cover) data.saveCover(cover)
+        queueSaveCover(data, cover)
         data.storage.saveNow()
     }
     const open = async file => {
@@ -529,6 +541,13 @@ export const BookViewer = GObject.registerClass({
     #book
     #cover
     #data
+    #detachData() {
+        if (!this.#data) return
+        utils.disconnectWith(this, this.#data.annotations)
+        utils.disconnectWith(this, this.#data.bookmarks)
+        dataStore.delete(this._view)
+        this.#data = null
+    }
     constructor(params) {
         super(params)
         utils.connect(this._view, {
@@ -829,10 +848,12 @@ export const BookViewer = GObject.registerClass({
             this._book_cover.hide()
         }
 
-        book.metadata.identifier ||= makeIdentifier(this.#file)
+        if (!book.metadata.identifier)
+            book.metadata.identifier = await makeIdentifier(this.#file)
         const { identifier } = book.metadata
         if (identifier) {
             this.#data = await dataStore.get(identifier, this._view)
+            const data = this.#data
             const { annotations, bookmarks } = this.#data
             this._annotation_view.setupModel(annotations)
             this._bookmark_view.setupModel(bookmarks)
@@ -849,7 +870,7 @@ export const BookViewer = GObject.registerClass({
             updateBookmarks()
             this.#data.storage.set('metadata', book.metadata)
             this.#data.saveURI(this.#file)
-            if (cover) this.#data.saveCover(cover)
+            queueSaveCover(data, cover, () => this.#data === data)
         }
         else await this._view.next()
     }
@@ -866,12 +887,14 @@ export const BookViewer = GObject.registerClass({
         }
     }
     #deleteAnnotation(annotation) {
-        this.#data.deleteAnnotation(annotation)
+        const data = this.#data
+        if (!data) return
+        data.deleteAnnotation(annotation)
         this.root.add_toast(utils.connect(new Adw.Toast({
             title: _('Annotation deleted'),
             button_label: _('Undo'),
         }), { 'button-clicked': () =>
-            this.#data.addAnnotation(annotation) }))
+            data.addAnnotation(annotation) }))
     }
     #showSelection({ type, value, text, content, lang, pos: { point, dir } }) {
         if (type === 'annotation') return new Promise(resolve => {
@@ -995,6 +1018,9 @@ export const BookViewer = GObject.registerClass({
         win.present()
     }
     open(file) {
+        this.#detachData()
+        this.#book = null
+        this.#cover = null
         this._top_overlay_box.show()
         // "It is better not to show spinners for very short periods of time [...]
         // consider only showing the spinner after a period of time has elapsed."
@@ -1042,6 +1068,7 @@ export const BookViewer = GObject.registerClass({
         this._navbar.showLocation()
     }
     showInfo() {
+        if (!this.#book) return
         makeBookInfoWindow(this.root, this.#book.metadata, this.#cover, true)
     }
     preferences() {
@@ -1052,12 +1079,15 @@ export const BookViewer = GObject.registerClass({
         win.present(this.root)
     }
     bookmark() {
+        if (!this.#data) return
         this._bookmark_view.toggle()
     }
     exportAnnotations() {
+        if (!this.#data) return
         exportAnnotations(this.root, this.#data.storage.export())
     }
     importAnnotations() {
+        if (!this.#data) return
         importAnnotations(this.root, this.#data)
     }
     helpOverlay() {
@@ -1072,9 +1102,7 @@ export const BookViewer = GObject.registerClass({
         this._navbar.tts_box.kill()
         this._view.viewSettings.unbindSettings()
         this._view.fontSettings.unbindSettings()
-        utils.disconnectWith(this, this.#data.annotations)
-        utils.disconnectWith(this, this.#data.bookmarks)
-        dataStore.delete(this._view)
+        this.#detachData()
 
         // it seems that it's necessary to explicitly destroy web view
         this._view.webView.unparent()

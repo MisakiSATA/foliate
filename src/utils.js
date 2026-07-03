@@ -197,7 +197,12 @@ export const connectWith = (a, b, obj) => {
 }
 
 export const disconnectWith = (a, b) => {
-    for (const id of connections.get(a).get(b)) b.disconnect(id)
+    const map = connections.get(a)
+    const ids = map?.get(b)
+    if (!ids) return
+    for (const id of ids) b.disconnect(id)
+    map.delete(b)
+    if (!map.size) connections.delete(a)
 }
 
 export const settings = name => {

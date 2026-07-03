@@ -9,7 +9,8 @@ import { getURIStore, getBookList } from './library.js'
 export class BookData {
     annotations = utils.connect(new AnnotationModel(), {
         'update-annotation': async (_, annotation) => {
-            for (const view of this.views) await view.addAnnotation(annotation)
+            await Promise.all(Array.from(this.views,
+                view => view.addAnnotation(annotation)))
             await this.#saveAnnotations()
         },
     })
@@ -52,7 +53,7 @@ export class BookData {
             const [view, ...views] = this.views
             const { index, label } = await view.addAnnotation(annotation)
             this.annotations.add(annotation, index, label)
-            for (const view of views) view.addAnnotation(annotation)
+            await Promise.all(views.map(view => view.addAnnotation(annotation)))
             if (save) this.#saveAnnotations()
             return annotation
         } catch (e) {
@@ -68,7 +69,7 @@ export class BookData {
             const [view, ...views] = this.views
             const { index } = await view.deleteAnnotation(annotation)
             this.annotations.delete(annotation, index)
-            for (const view of views) view.deleteAnnotation(annotation)
+            await Promise.all(views.map(view => view.deleteAnnotation(annotation)))
             return this.#saveAnnotations()
         } catch (e) {
             console.error(e)
@@ -124,7 +125,9 @@ class BookDataStore {
     delete(view) {
         const key = this.#keys.get(view)
         const views = this.#views.get(key)
+        if (!views) return
         views.delete(view)
+        this.#keys.delete(view)
         if (!views.size) {
             this.#map.delete(key)
             this.#views.delete(key)

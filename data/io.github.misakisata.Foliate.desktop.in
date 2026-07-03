@@ -1,0 +1,16 @@
+[Desktop Entry]
+# Translators: Do NOT translate! The is the application name!
+Name=Foliate 自用版
+GenericName=电子书阅读器
+Comment=阅读电子书
+Categories=Office;Viewer;
+MimeType=application/epub+zip;application/x-mobipocket-ebook;application/vnd.amazon.mobi8-ebook;application/x-mobi8-ebook;application/x-fictionbook+xml;application/x-zip-compressed-fb2;application/vnd.comicbook+zip;application/pdf;x-scheme-handler/opds;
+Exec=foliate-personal %U
+Icon=io.github.misakisata.Foliate
+Terminal=false
+Type=Application
+# Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+Keywords=Ebook;Book;EPUB;Viewer;Reader;电子书;阅读器;
+# Translators: Do NOT translate or transliterate this text (these are enum types)!
+X-Purism-FormFactor=Workstation;Mobile;
+StartupNotify=true

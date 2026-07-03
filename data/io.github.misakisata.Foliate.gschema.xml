@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schemalist gettext-domain="com.github.johnfactotum.Foliate">
-  <schema id="com.github.johnfactotum.Foliate" path="/com/github/johnfactotum/Foliate/">
-    <child schema="com.github.johnfactotum.Foliate.window" name="window"/>
-    <child schema="com.github.johnfactotum.Foliate.viewer" name="library"/>
-    <child schema="com.github.johnfactotum.Foliate.viewer" name="viewer"/>
+<schemalist gettext-domain="io.github.misakisata.Foliate">
+  <schema id="io.github.misakisata.Foliate" path="/io/github/misakisata/Foliate/">
+    <child schema="io.github.misakisata.Foliate.window" name="window"/>
+    <child schema="io.github.misakisata.Foliate.library" name="library"/>
+    <child schema="io.github.misakisata.Foliate.viewer" name="viewer"/>
     <key name="color-scheme" type="i">
       <default>0</default>
     </key>
   </schema>
 
-  <schema id="com.github.johnfactotum.Foliate.window"
-    path="/com/github/johnfactotum/Foliate/window/">
+  <schema id="io.github.misakisata.Foliate.window"
+    path="/io/github/misakisata/Foliate/window/">
     <key name="default-width" type="i">
       <default>1200</default>
     </key>
@@ -25,8 +25,8 @@
     </key>
   </schema>
 
-  <schema id="com.github.johnfactotum.Foliate.library"
-    path="/com/github/johnfactotum/Foliate/library/">
+  <schema id="io.github.misakisata.Foliate.library"
+    path="/io/github/misakisata/Foliate/library/">
     <key name="view-mode" type="s">
       <default>'grid'</default>
     </key>
@@ -38,10 +38,10 @@
     </key>
   </schema>
 
-  <schema id="com.github.johnfactotum.Foliate.viewer"
-    path="/com/github/johnfactotum/Foliate/viewer/">
-    <child schema="com.github.johnfactotum.Foliate.viewer.view" name="view"/>
-    <child schema="com.github.johnfactotum.Foliate.viewer.font" name="font"/>
+  <schema id="io.github.misakisata.Foliate.viewer"
+    path="/io/github/misakisata/Foliate/viewer/">
+    <child schema="io.github.misakisata.Foliate.viewer.view" name="view"/>
+    <child schema="io.github.misakisata.Foliate.viewer.font" name="font"/>
     <key name="fold-sidebar" type="b">
       <default>false</default>
     </key>
@@ -53,8 +53,8 @@
     </key>
   </schema>
 
-  <schema id="com.github.johnfactotum.Foliate.viewer.view"
-    path="/com/github/johnfactotum/Foliate/viewer/view/">
+  <schema id="io.github.misakisata.Foliate.viewer.view"
+    path="/io/github/misakisata/Foliate/viewer/view/">
     <key name="brightness" type="d">
       <default>1</default>
     </key>
@@ -99,8 +99,8 @@
     </key>
   </schema>
 
-  <schema id="com.github.johnfactotum.Foliate.viewer.font"
-    path="/com/github/johnfactotum/Foliate/viewer/font/">
+  <schema id="io.github.misakisata.Foliate.viewer.font"
+    path="/io/github/misakisata/Foliate/viewer/font/">
     <key name="serif" type="s">
       <default>'Serif'</default>
     </key>

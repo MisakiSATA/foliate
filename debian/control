@@ -12,9 +12,9 @@ Build-Depends: debhelper-compat(=13),
 	appstream
 Standards-Version: 4.5.0
 Rules-Requires-Root: no
-Homepage: https://johnfactotum.github.io/foliate/
-Vcs-Browser: https://github.com/johnfactotum/foliate
-Vcs-Git: https://github.com/johnfactotum/foliate.git
+Homepage: https://github.com/MisakiSATA/foliate
+Vcs-Browser: https://github.com/MisakiSATA/foliate
+Vcs-Git: https://github.com/MisakiSATA/foliate.git
 
 Package: foliate
 Architecture: all

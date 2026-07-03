@@ -1,7 +1,7 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: foliate
 Upstream-Contact: John Factotum <50942278+johnfactotum@users.noreply.github.com>
-Source: https://github.com/johnfactotum/foliate
+Source: https://github.com/MisakiSATA/foliate
 
 Files: *
 Copyright: John Factotum

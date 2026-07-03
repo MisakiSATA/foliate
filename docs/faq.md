@@ -50,15 +50,15 @@ Themes are defined as JSON files. Here is an example theme:
 }
 ```
 
-To install themes, you need to put them in `~/.config/com.github.johnfactotum.Foliate/themes/`.
+To install themes, you need to put them in `~/.config/io.github.misakisata.Foliate/themes/`.
 
-When using Flatpak, the files should be placed in `~/.var/app/com.github.johnfactotum.Foliate/config/com.github.johnfactotum.Foliate/themes/`.
+When using Flatpak, the files should be placed in `~/.var/app/io.github.misakisata.Foliate/config/io.github.misakisata.Foliate/themes/`.
 
-When using Snap, the files should be placed in `~/snap/foliate/current/.config/com.github.johnfactotum.Foliate/themes/`.
+When using Snap, the files should be placed in `~/snap/foliate-personal/current/.config/io.github.misakisata.Foliate/themes/`.
 
 ### Can I set my own custom CSS styles?
 
-You can create a user stylesheet file at `~/.config/com.github.johnfactotum.Foliate/user-stylesheet.css`. If you're using Flatpak, the location should be `~/.var/app/com.github.johnfactotum.Foliate/config/com.github.johnfactotum.Foliate/user-stylesheet.css`. Note that Foliate needs to be restarted for changes to take effect.
+You can create a user stylesheet file at `~/.config/io.github.misakisata.Foliate/user-stylesheet.css`. If you're using Flatpak, the location should be `~/.var/app/io.github.misakisata.Foliate/config/io.github.misakisata.Foliate/user-stylesheet.css`. Note that Foliate needs to be restarted for changes to take effect.
 
 Tip: you can use the [`:lang()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:lang) selector to apply different styles for books in different languages.
 
@@ -66,11 +66,11 @@ Tip: you can use the [`:lang()`](https://developer.mozilla.org/en-US/docs/Web/CS
 
 ### How are notes and bookmarks stored?
 
-Your reading progress, bookmarks, and annotations are saved in `~/.local/share/com.github.johnfactotum.Foliate`.
+Your reading progress, bookmarks, and annotations are saved in `~/.local/share/io.github.misakisata.Foliate`.
 
-When using Flatpak, they are placed in `~/.var/app/com.github.johnfactotum.Foliate/data/com.github.johnfactotum.Foliate`.
+When using Flatpak, they are placed in `~/.var/app/io.github.misakisata.Foliate/data/io.github.misakisata.Foliate`.
 
-When using Snap, they are placed in `~/snap/foliate/current/.local/share/com.github.johnfactotum.Foliate`.
+When using Snap, they are placed in `~/snap/foliate-personal/current/.local/share/io.github.misakisata.Foliate`.
 
 The data for each book is stored in a JSON file named after the book's identifier. If you'd like to sync or backup your progress and notes, simply copy these files and everything should just work™.
 

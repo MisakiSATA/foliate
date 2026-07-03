@@ -4,7 +4,7 @@
 
 Foliate tries to respect the publisher's stylesheet. It's hard to strike a balance between user control and publisher control, and overriding the book's styles can result in unexpted breakages. Ultimately, it is up to the publishers to not hardcode styles unecessarily.
 
-To work around this issue, you can [add your own custom styles](https://github.com/johnfactotum/foliate/blob/gtk4/docs/faq.md#can-i-set-my-own-custom-css-styles).
+To work around this issue, you can [add your own custom styles](faq.md#can-i-set-my-own-custom-css-styles).
 
 ## The dictionary/Wikipedia/translation tool doesn't work
 
@@ -40,12 +40,12 @@ The issue could be mixed locales, which Flatpak can't handle. To fix this, set t
 
 ### ... and I'm using Snap
 
-The issue could be [#1102](https://github.com/johnfactotum/foliate/issues/1102). To fix this, run the following command:
+The issue could be related to the Snap sandbox namespace. To fix this, run the following command:
 
 ```sh
-sudo /usr/lib/snapd/snap-discard-ns foliate
+sudo /usr/lib/snapd/snap-discard-ns foliate-personal
 ```
 
 ## I'm still having issues
 
-Please [file a bug report](https://github.com/johnfactotum/foliate/issues/new/choose). Don't be concerned about whether your issue is already reported or not. It's better to have duplicate reports of the same bug than having different bugs in the same issue thread.
+Please [file a bug report](https://github.com/MisakiSATA/foliate/issues/new/choose). Don't be concerned about whether your issue is already reported or not. It's better to have duplicate reports of the same bug than having different bugs in the same issue thread.

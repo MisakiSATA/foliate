@@ -1,6 +1,8 @@
 _build/
 build/
+.flatpak-build/
 .flatpak-builder/
+dist/
 .mo
 __pycache__/
 node_modules/

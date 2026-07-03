@@ -101,6 +101,8 @@ const getURIFromTracker = identifier => {
 }
 
 const showCovers = utils.settings('library')?.get_boolean('show-covers') ?? true
+const bookLoadBatchSize = 20
+const searchFields = ['title', 'creator', 'description']
 
 const listBooks = function* (path) {
     const ls = utils.listDir(path, 'standard::name,time::modified')
@@ -148,11 +150,22 @@ const BookList = GObject.registerClass({
     constructor(params) {
         super(params)
         this.readFile = utils.memoize(utils.readJSONFile)
+        this.readSearchText = utils.memoize(file => {
+            const { metadata } = this.readFile(file) ?? {}
+            if (!metadata) return ''
+            return searchFields
+                .map(field => metadata[field])
+                .filter(x => typeof x === 'string')
+                .join('\n')
+                .toLowerCase()
+        })
         this.readCover = utils.memoize(identifier => {
             const path = pkg.cachepath(`${encodeURIComponent(identifier)}.png`)
             try { return GdkPixbuf.Pixbuf.new_from_file(path) }
             catch { return null }
         })
+        this.readCoverAsync = utils.memoize(identifier =>
+            utils.wait(0).then(() => this.readCover(identifier)))
     }
     loadMore(n) {
         for (let i = 0; i < n; i++) {
@@ -166,6 +179,7 @@ const BookList = GObject.registerClass({
         return this.getBookFromIdentifier(identifier)
     }
     getBookFromIdentifier(identifier) {
+        if (!identifier) return null
         const uri = this.#uriStore.get(identifier)
         return !uri ? null : uri.startsWith('~')
             ? Gio.File.new_for_path(uri.replace('~', GLib.get_home_dir()))
@@ -251,6 +265,9 @@ const BookItem = GObject.registerClass({
         this._image.load(cover?.then ? null : cover, title)
         this._progress.label = format.percent(fraction(data.progress))
     }
+    matches(item) {
+        return this.#item === item
+    }
 })
 
 const BookRow = GObject.registerClass({
@@ -304,9 +321,6 @@ const BookRow = GObject.registerClass({
         }
     }
 })
-
-const matchString = (x, q) => typeof x === 'string'
-    ? x.toLowerCase().includes(q) : false
 
 GObject.registerClass({
     GTypeName: 'FoliateLibraryView',
@@ -383,7 +397,9 @@ GObject.registerClass({
                     const { cover, data } = this.#getData(item, showCovers)
                     child.update(item, data, cover)
                     if (cover?.then) cover
-                        .then(cover => child.update(item, data, cover))
+                        .then(cover => {
+                            if (child.matches(item)) child.update(item, data, cover)
+                        })
                         .catch(e => console.warn(e))
                 },
             }),
@@ -413,7 +429,7 @@ GObject.registerClass({
         const books = getBooks()
         const data = books.readFile(file)
         const identifier = data?.metadata?.identifier
-        const cover = getCover && identifier ? books.readCover(identifier) : null
+        const cover = getCover && identifier ? books.readCoverAsync(identifier) : null
         return { cover, data }
     }
     search(text) {
@@ -423,13 +439,8 @@ GObject.registerClass({
             return
         }
         this.emit('load-all')
-        const fields = ['title', 'creator', 'description']
-        const { readFile } = this.#filterModel.model
-        this.#filter.set_filter_func(file => {
-            const { metadata } = readFile(file)
-            if (!metadata) return false
-            return fields.some(field => matchString(metadata[field], q))
-        })
+        const { readSearchText } = this.#filterModel.model
+        this.#filter.set_filter_func(file => readSearchText(file).includes(q))
     }
     removeBook(file) {
         const dialog = new Adw.AlertDialog({
@@ -895,13 +906,13 @@ export const Library = GObject.registerClass({
 
         utils.connect(this._books_view, {
             'activate': (_, item) => this.root.openFile(books.getBook(item)),
-            'load-more': () => books.loadMore(1),
+            'load-more': () => books.loadMore(bookLoadBatchSize),
             'load-all': () => books.loadMore(Infinity),
         })
         this._books_view.setModel(books)
         this._books_view.view_mode = 'grid'
         utils.bindSettings('library', this._books_view, ['view-mode'])
-        books.loadMore(10)
+        books.loadMore(bookLoadBatchSize)
 
         this._search_bar.connect_entry(this._search_entry)
         this._search_entry.connect('search-changed', entry =>

@@ -58,6 +58,7 @@ const makeOpenDialog = () => {
             'application/x-fictionbook+xml',
             'application/x-zip-compressed-fb2',
             'application/vnd.comicbook+zip',
+            'application/pdf',
         ],
     })
     dialog.filters = new Gio.ListStore()
@@ -448,19 +449,19 @@ export const Application = GObject.registerClass({
             application_icon: pkg.name,
             version: pkg.version,
             comments: _('Read e-books in style'),
-            developer_name: 'John Factotum',
-            developers: ['John Factotum'],
+            developer_name: 'MisakiSATA',
+            developers: ['MisakiSATA', 'John Factotum'],
             artists: ['John Factotum', 'Tobias Bernard <tbernard@gnome.org>'],
             // Translators: put your names here, one name per line
             // they will be shown in the "About" dialog
             translator_credits: _('translator-credits'),
             license_type: Gtk.License.GPL_3_0,
-            website: 'https://johnfactotum.github.io/foliate/',
-            issue_url: 'https://github.com/johnfactotum/foliate/issues',
-            support_url: 'https://github.com/johnfactotum/foliate/blob/gtk4/docs/faq.md',
+            website: 'https://github.com/MisakiSATA/foliate',
+            issue_url: 'https://github.com/MisakiSATA/foliate/issues',
+            support_url: 'https://github.com/MisakiSATA/foliate/blob/gtk4/docs/faq.md',
             debug_info: getDebugInfo(),
         })
-        win.add_link(_('Source Code'), 'https://github.com/johnfactotum/foliate')
+        win.add_link(_('Source Code'), 'https://github.com/MisakiSATA/foliate')
         win.add_legal_section('foliate-js', null, Gtk.License.MIT_X11, null)
         win.add_legal_section('zip.js',
             'Copyright © 2022 Gildas Lormeau',

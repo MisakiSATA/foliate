@@ -1,17 +1,17 @@
 {
-  "name": "foliate",
+  "name": "foliate-personal",
   "version": "3.1.1",
-  "description": "Read e-books in style",
+  "description": "Personal Foliate build",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/johnfactotum/foliate.git"
+    "url": "git+https://github.com/MisakiSATA/foliate.git"
   },
-  "author": "John Factotum",
+  "author": "MisakiSATA",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/johnfactotum/foliate/issues"
+    "url": "https://github.com/MisakiSATA/foliate/issues"
   },
-  "homepage": "https://johnfactotum.github.io/foliate/",
+  "homepage": "https://github.com/MisakiSATA/foliate",
   "type": "module",
   "devDependencies": {
     "@eslint/js": "^9.9.1",
